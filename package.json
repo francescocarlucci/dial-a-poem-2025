@@ -1,15 +1,19 @@
 {
-  "name": "nodejs",
+  "name": "workspace",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Francesco Carlucci",
   "license": "ISC",
+  "description": "",
   "dependencies": {
-    "@types/node": "^18.0.6"
+    "@fastify/formbody": "^8.0.2",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.2.1",
+    "openai": "^4.89.0"
   }
 }
