@@ -104,6 +104,34 @@ fastify.get("/audio/:filename", async (request, reply) => {
   }
 });
 
+fastify.delete("/audio/cleanup", async (request, reply) => {
+  try {
+    const files = await fs.readdir(audioDir);
+    const now = Date.now();
+    const deleted = [];
+
+    for (const file of files) {
+      const filePath = path.join(audioDir, file);
+      const stats = await fs.stat(filePath);
+      const age = now - stats.mtimeMs;
+
+      if (age > 5 * 60 * 1000) {
+        // older than 5 minutes
+        await fs.unlink(filePath);
+        deleted.push(file);
+      }
+    }
+
+    reply.send({
+      message: `Cleanup complete.`,
+      deletedFiles: deleted,
+    });
+  } catch (err) {
+    console.error("Error during audio cleanup:", err);
+    reply.status(500).send("Error during cleanup.");
+  }
+});
+
 fastify.listen({ port: PORT }, (err) => {
   if (err) {
     console.error(err);
