@@ -90,8 +90,6 @@ fastify.all("/inbound", async (request, reply) => {
       audioUrl = `${request.protocol}://${request.headers.host}/audio/${filename}`;
     }
 
-    const audioUrl = `${request.protocol}://${request.headers.host}/audio/${filename}`;
-
     const texml = `<?xml version="1.0" encoding="UTF-8"?>
       <Response>
         <Play>${audioUrl}</Play>
