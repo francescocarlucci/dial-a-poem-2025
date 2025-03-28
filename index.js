@@ -16,6 +16,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 fastify.register(fastifyFormBody);
 
+const APP_MODE = process.env.APP_MODE || "dynamic"; // "static" or "dynamic"
 const LANGUAGE = "Italian";
 const VOICES = [
   "alloy",
@@ -41,39 +42,53 @@ fastify.get("/", async (request, reply) => {
 });
 
 fastify.all("/inbound", async (request, reply) => {
-  console.log("Incoming call: loading poem from filesystem...");
+  console.log(`Incoming call in ${APP_MODE} mode`);
 
   try {
-    const poemsDir = path.join(__dirname, "poems");
-    const files = await fs.readdir(poemsDir);
+    let audioUrl;
 
-    if (files.length === 0) {
-      throw new Error("No poem files found in poems folder.");
+    if (APP_MODE === "static") {
+      // Use existing audio file if available
+      const audioFiles = await fs.readdir(audioDir);
+      if (audioFiles.length === 0) {
+        throw new Error("No audio files available in static mode");
+      }
+      const randomAudio = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+      audioUrl = `${request.protocol}://${request.headers.host}/audio/${randomAudio}`;
+    } else {
+      // Dynamic mode - generate new audio
+      const poemsDir = path.join(__dirname, "poems");
+      const files = await fs.readdir(poemsDir);
+
+      if (files.length === 0) {
+        throw new Error("No poem files found in poems folder.");
+      }
+
+      const randomFile = files[Math.floor(Math.random() * files.length)];
+      const filePath = path.join(poemsDir, randomFile);
+      const poem = (await fs.readFile(filePath, "utf-8")).trim();
+
+      console.log(`Selected Poem (${randomFile}):\n`, poem);
+
+      const instructions = `Voice: A slow, calm and expressive ${LANGUAGE} speaker, reciting a poem. Speak with elegance and feeling, capturing the rhythm and emotion of the original work.`;
+
+      const speech = await openai.audio.speech.create({
+        model: "gpt-4o-mini-tts",
+        voice: VOICES[Math.floor(Math.random() * VOICES.length)],
+        input: poem,
+        instructions,
+      });
+
+      const buffer = Buffer.from(await speech.arrayBuffer());
+
+      // Save buffer to disk
+      const randomId = Math.random().toString(36).substring(2, 10);
+      const filename = `audio-${randomId}.mp3`;
+      const fileSavePath = path.join(audioDir, filename);
+
+      await fs.writeFile(fileSavePath, buffer);
+      audioUrl = `${request.protocol}://${request.headers.host}/audio/${filename}`;
     }
-
-    const randomFile = files[Math.floor(Math.random() * files.length)];
-    const filePath = path.join(poemsDir, randomFile);
-    const poem = (await fs.readFile(filePath, "utf-8")).trim();
-
-    console.log(`Selected Poem (${randomFile}):\n`, poem);
-
-    const instructions = `Voice: A slow, calm and expressive ${LANGUAGE} speaker, reciting a poem. Speak with elegance and feeling, capturing the rhythm and emotion of the original work.`;
-
-    const speech = await openai.audio.speech.create({
-      model: "gpt-4o-mini-tts",
-      voice: VOICES[Math.floor(Math.random() * VOICES.length)],
-      input: poem,
-      instructions,
-    });
-
-    const buffer = Buffer.from(await speech.arrayBuffer());
-
-    // Save buffer to disk
-    const randomId = Math.random().toString(36).substring(2, 10);
-    const filename = `audio-${randomId}.mp3`;
-    const fileSavePath = path.join(audioDir, filename);
-
-    await fs.writeFile(fileSavePath, buffer);
 
     const audioUrl = `${request.protocol}://${request.headers.host}/audio/${filename}`;
 
