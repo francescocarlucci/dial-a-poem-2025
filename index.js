@@ -31,6 +31,7 @@ const VOICES = [
   "verse",
 ];
 const PORT = process.env.PORT || 8000;
+const CLEANUP_AGE_MS = 7 * 24 * 60 * 60 * 1000; // One week in milliseconds
 
 const audioDir = path.join(__dirname, "audio");
 await fs.mkdir(audioDir, { recursive: true }); // Ensure audio directory exists
@@ -115,7 +116,7 @@ fastify.delete("/audio/cleanup", async (request, reply) => {
       const stats = await fs.stat(filePath);
       const age = now - stats.mtimeMs;
 
-      if (age > 5 * 60 * 1000) {
+      if (age > CLEANUP_AGE_MS) {
         // older than 5 minutes
         await fs.unlink(filePath);
         deleted.push(file);
