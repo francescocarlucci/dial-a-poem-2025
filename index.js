@@ -49,13 +49,16 @@ fastify.all("/inbound", async (request, reply) => {
     if (APP_MODE === "static") {
       // Use existing audio file if available
       const audioFiles = await fs.readdir(audioDir);
-      if (audioFiles.length === 0) {
-        throw new Error("No audio files available in static mode");
+      if (audioFiles.length > 0) {
+        const randomAudio =
+          audioFiles[Math.floor(Math.random() * audioFiles.length)];
+        audioUrl = `${request.protocol}://${request.headers.host}/audio/${randomAudio}`;
+      } else {
+        console.log("No static files found, falling back to dynamic mode");
       }
-      const randomAudio =
-        audioFiles[Math.floor(Math.random() * audioFiles.length)];
-      audioUrl = `${request.protocol}://${request.headers.host}/audio/${randomAudio}`;
-    } else {
+    }
+    
+    if (audioUrl === undefined) {
       // Dynamic mode - generate new audio
       const poemsDir = path.join(__dirname, "poems");
       const files = await fs.readdir(poemsDir);
