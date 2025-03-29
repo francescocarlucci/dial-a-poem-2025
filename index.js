@@ -16,8 +16,8 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 fastify.register(fastifyFormBody);
 
-const APP_MODE = "static"; // "static" or "dynamic"
-const LANGUAGE = "Italian";
+const APP_MODE = process.env.APP_MODE || "static"; // "static" or "dynamic"
+const LANGUAGE = process.env.LANGUAGE || "Italian";
 const VOICES = [
   "alloy",
   "ash",
