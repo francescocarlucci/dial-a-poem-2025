@@ -52,12 +52,13 @@ fastify.all("/inbound", async (request, reply) => {
       if (audioFiles.length > 0) {
         const randomAudio =
           audioFiles[Math.floor(Math.random() * audioFiles.length)];
+        console.log(`Selected Poem: ${randomAudio}`);
         audioUrl = `${request.protocol}://${request.headers.host}/audio/${randomAudio}`;
       } else {
         console.log("No static files found, falling back to dynamic mode");
       }
     }
-    
+
     if (audioUrl === undefined) {
       // Dynamic mode - generate new audio
       const poemsDir = path.join(__dirname, "poems");
@@ -71,7 +72,7 @@ fastify.all("/inbound", async (request, reply) => {
       const filePath = path.join(poemsDir, randomFile);
       const poem = (await fs.readFile(filePath, "utf-8")).trim();
 
-      console.log(`Selected Poem (${randomFile}):\n`, poem);
+      console.log(`Selected Poem: ${randomFile}`);
 
       const instructions = `Voice: A slow, calm and expressive ${LANGUAGE} speaker, reciting a poem. Speak with elegance and feeling, capturing the rhythm and emotion of the original work.`;
 
