@@ -77,9 +77,12 @@ fastify.all("/inbound", async (request, reply) => {
 
       const instructions = `Voice: A slow, calm and expressive ${LANGUAGE} speaker, reciting a poem. Speak with elegance and feeling, capturing the rhythm and emotion of the original work.`;
 
+      const selectedVoice = VOICES[Math.floor(Math.random() * VOICES.length)];
+      console.log(`Voice Used: ${selectedVoice}`);
+
       const speech = await openai.audio.speech.create({
         model: "gpt-4o-mini-tts",
-        voice: VOICES[Math.floor(Math.random() * VOICES.length)],
+        voice: selectedVoice,
         input: poem,
         instructions,
       });
