@@ -75,7 +75,7 @@ fastify.all("/inbound", async (request, reply) => {
 
       console.log(`Selected Poem: ${randomFile}`);
 
-      const instructions = `Voice: A slow, calm and expressive ${LANGUAGE} speaker, reciting a poem. Speak with elegance and feeling, capturing the rhythm and emotion of the original work.`;
+      const instructions = `Voice: A slow, calm and expressive ${LANGUAGE} speaker, reciting a poem. Pacing: speak with elegance and feeling, capturing the rhythm and emotion of the original work.`;
 
       const selectedVoice = VOICES[Math.floor(Math.random() * VOICES.length)];
       console.log(`Voice Used: ${selectedVoice}`);
@@ -84,7 +84,7 @@ fastify.all("/inbound", async (request, reply) => {
         model: "gpt-4o-mini-tts",
         voice: selectedVoice,
         input: poem,
-        instructions,
+        instructions: instructions,
       });
 
       const buffer = Buffer.from(await speech.arrayBuffer());
