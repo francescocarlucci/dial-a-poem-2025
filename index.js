@@ -108,6 +108,15 @@ fastify.all("/inbound", async (request, reply) => {
   }
 });
 
+fastify.get("/audio/list", async (request, reply) => {
+  try {
+    const files = await fs.readdir(audioDir);
+    reply.send({ files });
+  } catch (err) {
+    reply.status(500).send("Error reading audio directory");
+  }
+});
+
 fastify.get("/audio/:filename", async (request, reply) => {
   const { filename } = request.params;
   const filePath = path.join(audioDir, filename);
