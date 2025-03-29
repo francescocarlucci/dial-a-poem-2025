@@ -16,7 +16,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 fastify.register(fastifyFormBody);
 
-const APP_MODE = "dynamic"; // "static" or "dynamic"
+const APP_MODE = "static"; // "static" or "dynamic"
 const LANGUAGE = "Italian";
 const VOICES = [
   "alloy",
@@ -53,7 +53,8 @@ fastify.all("/inbound", async (request, reply) => {
       if (audioFiles.length === 0) {
         throw new Error("No audio files available in static mode");
       }
-      const randomAudio = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+      const randomAudio =
+        audioFiles[Math.floor(Math.random() * audioFiles.length)];
       audioUrl = `${request.protocol}://${request.headers.host}/audio/${randomAudio}`;
     } else {
       // Dynamic mode - generate new audio
@@ -130,7 +131,6 @@ fastify.delete("/audio/cleanup", async (request, reply) => {
       const age = now - stats.mtimeMs;
 
       if (age > CLEANUP_AGE_MS) {
-        // older than 5 minutes
         await fs.unlink(filePath);
         deleted.push(file);
       }
