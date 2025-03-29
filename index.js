@@ -59,7 +59,8 @@ fastify.all("/inbound", async (request, reply) => {
       }
     }
 
-    if (audioUrl === undefined) {
+    // Handle dynamic mode or fallback from static mode
+    if (APP_MODE === "dynamic" || audioUrl === undefined) {
       // Dynamic mode - generate new audio
       const poemsDir = path.join(__dirname, "poems");
       const files = await fs.readdir(poemsDir);
