@@ -32,7 +32,6 @@ const VOICES = [
   "verse",
 ];
 const PORT = process.env.PORT || 8000;
-const CLEANUP_AGE_MS = 7 * 24 * 60 * 60 * 1000; // One week in milliseconds
 
 const audioDir = path.join(__dirname, "audio");
 await fs.mkdir(audioDir, { recursive: true }); // Ensure audio directory exists
@@ -118,8 +117,6 @@ fastify.get("/audio/:filename", async (request, reply) => {
     reply.status(404).send("Audio not found.");
   }
 });
-
-
 
 fastify.listen({ port: PORT }, (err) => {
   if (err) {
