@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "cleanup": "node cleanup.js",
-    "cleanup:all": "node cleanup.js 0"
+    "cleanup:all": "node cleanup.js 0",
+    "preload": "node preload.js"
   },
   "keywords": [],
   "author": "Francesco Carlucci",
