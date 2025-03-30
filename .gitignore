@@ -1,6 +1,7 @@
 .DS_Store
 /audio/
 /poems/
+/fallback/
 
 # Logs
 logs
