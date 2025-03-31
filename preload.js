@@ -1,4 +1,3 @@
-
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import fs from "fs/promises";
@@ -13,7 +12,17 @@ const __dirname = path.dirname(__filename);
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const LANGUAGE = process.env.LANGUAGE || "Italian";
-const VOICES = ["alloy", "ash", "ballad", "coral", "echo", "fable", "onyx", "nova", "sage", "shimmer", "verse"];
+const VOICES = [
+  "alloy",
+  "ash",
+  "ballad",
+  "coral",
+  "echo",
+  "onyx",
+  "nova",
+  "sage",
+  "verse",
+];
 
 async function generateAudio(poemPath, outputPath) {
   try {
@@ -51,10 +60,10 @@ async function preload() {
     console.log(`Found ${poemFiles.length} poem files`);
 
     for (const poemFile of poemFiles) {
-      if (!poemFile.endsWith('.txt')) continue;
-      
+      if (!poemFile.endsWith(".txt")) continue;
+
       const poemPath = path.join(poemsDir, poemFile);
-      const audioFileName = poemFile.replace('.txt', '.mp3');
+      const audioFileName = poemFile.replace(".txt", ".mp3");
       const audioPath = path.join(audioDir, audioFileName);
 
       await generateAudio(poemPath, audioPath);
