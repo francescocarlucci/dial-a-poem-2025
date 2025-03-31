@@ -48,7 +48,7 @@ async function generateAudio(poemPath, outputPath) {
   }
 }
 
-async function preload() {
+async function preload(poemName) {
   const poemsDir = path.join(__dirname, "poems");
   const audioDir = path.join(__dirname, "audio");
 
@@ -56,17 +56,33 @@ async function preload() {
     // Ensure audio directory exists
     await fs.mkdir(audioDir, { recursive: true });
 
-    const poemFiles = await fs.readdir(poemsDir);
-    console.log(`Found ${poemFiles.length} poem files`);
-
-    for (const poemFile of poemFiles) {
-      if (!poemFile.endsWith(".txt")) continue;
-
+    if (poemName) {
+      const poemFile = `${poemName}.txt`;
       const poemPath = path.join(poemsDir, poemFile);
       const audioFileName = poemFile.replace(".txt", ".mp3");
       const audioPath = path.join(audioDir, audioFileName);
 
-      await generateAudio(poemPath, audioPath);
+      // Check if poem exists
+      try {
+        await fs.access(poemPath);
+        await generateAudio(poemPath, audioPath);
+      } catch (err) {
+        console.error(`❌ Poem "${poemName}" not found`);
+        process.exit(1);
+      }
+    } else {
+      const poemFiles = await fs.readdir(poemsDir);
+      console.log(`Found ${poemFiles.length} poem files`);
+
+      for (const poemFile of poemFiles) {
+        if (!poemFile.endsWith(".txt")) continue;
+
+        const poemPath = path.join(poemsDir, poemFile);
+        const audioFileName = poemFile.replace(".txt", ".mp3");
+        const audioPath = path.join(audioDir, audioFileName);
+
+        await generateAudio(poemPath, audioPath);
+      }
     }
 
     console.log("\n✨ Preload complete!");
@@ -76,4 +92,6 @@ async function preload() {
   }
 }
 
-preload();
+// Get poem name from command line argument
+const poemName = process.argv[2]?.replace(".txt", "");
+preload(poemName);
