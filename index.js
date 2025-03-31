@@ -24,11 +24,9 @@ const VOICES = [
   "ballad",
   "coral",
   "echo",
-  "fable",
   "onyx",
   "nova",
   "sage",
-  "shimmer",
   "verse",
 ];
 const PORT = process.env.PORT || 8000;
