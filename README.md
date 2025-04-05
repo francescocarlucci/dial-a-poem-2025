@@ -87,4 +87,4 @@ MIT License
 
 ### Author
 
-Francesco Carlucci
+Francesco Carlucci - https://francescocarlucci.com/
